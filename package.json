@@ -1,0 +1,14 @@
+{
+  "name": "ToteDividendCalculator",
+  "version": "1.0.0",
+  "description": "A Tote Betting Dividend Calculator for tabcorp",
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "author": "Sambaran Roy <sambaranr@gmail.com>",
+  "license": "BSD",
+  "devDependencies": {
+    "mocha": "^1.21.4",
+    "chai": "^1.9.1"
+  }
+}
