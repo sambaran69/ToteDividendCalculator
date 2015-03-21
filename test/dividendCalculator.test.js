@@ -1,13 +1,9 @@
 var Calculators = require('../lib/dividendCalculators');
 var assert = require('chai').assert;
+var expect = require('chai').expect;
 
 describe('Dividend Calculator', function() {
 	describe('Win', function() {
-
-		var WinCalculator;
-		var totalBets;
-		var raceResults;
-		var expectedResponse;
 
 	  beforeEach(function(){
 	  	WinCalculator = new Calculators.WinCalculator();
@@ -17,11 +13,7 @@ describe('Dividend Calculator', function() {
 	  		{ 'product': 'W' , 'selection': '2' , 'stake': 10 },
 	  		{ 'product': 'W' , 'selection': '1' , 'stake': 20 },
 	  		{ 'product': 'W' , 'selection': '2' , 'stake': 20 },
-	  		{ 'product': 'W' , 'selection': '3' , 'stake': 40 },
-	  		{ 'product': 'P' , 'selection': '2' , 'stake': 10 },
-	  		{ 'product': 'P' , 'selection': '3' , 'stake': 10 },
-	  		{ 'product': 'E' , 'selection': '1,3' , 'stake': 10 },
-	  		{ 'product': 'E' , 'selection': '2,3' , 'stake': 10 }	  		 			  			  			  			  		
+	  		{ 'product': 'W' , 'selection': '3' , 'stake': 40 }
 	  	];
 	  	expectedResponseBets = {
 	  		'1': [
@@ -29,7 +21,7 @@ describe('Dividend Calculator', function() {
 	  			{ 'product': 'W' , 'selection': '1' , 'stake': 20 }
 	  		]
 	  	};
-	  	expectedResponseDividends = {	'1': 2.83 };
+	  	expectedResponseDividends = [{	'1': 2.83 }];
 	  });
 
 		it('Can be initialized properly', function() {
@@ -41,37 +33,43 @@ describe('Dividend Calculator', function() {
 
 		it('Should take 15 percent commission before calculating dividends', function() {
 			var poolTotal = WinCalculator.CalculatePoolTotal(totalBets);
-			
+
 			assert.equal(poolTotal, 85);
 		});
+
 		it('Should pick correct winning bets from the pool', function() {
 			var winningBets = WinCalculator.CalculateWinningBets(totalBets, raceResults);
 
-			assert.equal(winningBets, expectedResponseBets);
+			expect(winningBets).to.have.property('1');
+			expect(winningBets).to.deep.equal(expectedResponseBets);			
 		});
 
 		it('Should calculate dividends correctly', function() {
 			var winningBets = WinCalculator.CalculateWinningBets(totalBets, raceResults);
 			var dividends = WinCalculator.CalculateDividends(winningBets,totalBets);
 
-			assert.equal(winningBets, expectedResponseBets);
-			assert.equal(dividends, expectedResponseDividends);				
+			expect(winningBets).to.have.property('1');
+			expect(dividends[0]).to.have.property('1');
+			expect(dividends[0]).to.have.deep.property('1', 2.83);
+			expect(winningBets).to.deep.equal(expectedResponseBets);
+			expect(dividends).to.deep.equal(expectedResponseDividends);			
 		});
 
 		it('Should return a single result', function() {
 			var winningBets = WinCalculator.CalculateWinningBets(totalBets, raceResults);
 			var dividends = WinCalculator.CalculateDividends(winningBets,totalBets);
-			var propertyCount = Object.keys(dividends);
+			var propertyCount = Object.keys(dividends[0]);
 
-			assert.equal(winningBets, expectedResponseBets);
-			assert.equal(dividends, expectedResponseDividends);
+			assert.equal(dividends.length, 1);
 			assert.equal(propertyCount.length,1);
-			assert.equal(dividends[propertyCount[0]],2.83);
+			assert.equal(dividends[0][propertyCount[0]], 2.83);
+			expect(winningBets).to.deep.equal(expectedResponseBets);
+			expect(dividends).to.deep.equal(expectedResponseDividends);
 		});
 
 	});
+
 	describe('Place', function() {
-		var PlaceCalculator;
 
 	  beforeEach(function(){
 	  	PlaceCalculator = new Calculators.PlaceCalculator();
@@ -118,12 +116,27 @@ describe('Dividend Calculator', function() {
 
 		});
 	});
-	describe('Exacta', function() {
 
-		var ExactaCalculator;
+	describe('Exacta', function() {
 
 	  beforeEach(function(){
 	  	ExactaCalculator = new Calculators.ExactaCalculator();
+	  	raceResults = { 'first': '1', 'second': '2', 'third': '3' };
+	  	totalBets = [
+	  		{ 'product': 'E' , 'selection': '1,2' , 'stake': 10 },
+	  		{ 'product': 'E' , 'selection': '2,3' , 'stake': 10 },
+	  		{ 'product': 'E' , 'selection': '1,2' , 'stake': 20 },
+	  		{ 'product': 'E' , 'selection': '2,3' , 'stake': 20 },
+	  		{ 'product': 'E' , 'selection': '1,3' , 'stake': 10 },
+	  		{ 'product': 'E' , 'selection': '1,3' , 'stake': 20 }	
+	  	];
+	  	expectedResponseBets = {
+	  		'1': [
+	  			{ 'product': 'W' , 'selection': '1,2' , 'stake': 10 },
+	  			{ 'product': 'W' , 'selection': '1,2' , 'stake': 20 }
+	  		]
+	  	};
+	  	expectedResponseDividends = [{ '1,2': 2.83 }];	  	
 	  });
 
 		it('Can be initialized properly', function() {
@@ -132,17 +145,40 @@ describe('Dividend Calculator', function() {
       assert.equal(ExactaCalculator.name,'Exacta');
       assert.equal(ExactaCalculator.commisionPercentage,18);
 		});
+
 		it('Should take 18 percent commission before calculating dividends', function() {
+			var poolTotal = ExactaCalculator.CalculatePoolTotal(totalBets);
 
+			assert.equal(poolTotal, 73.8);
 		});
+
 		it('Should pick correct winning bets from the pool', function() {
+			var winningBets = ExactaCalculator.CalculateWinningBets(totalBets, raceResults);
 
+			expect(winningBets).to.have.property('1,2');
+			expect(winningBets).to.deep.equal(expectedResponseBets);
 		});
-		it('Should calculate dividends correctly', function() {
 
+		it('Should calculate dividends correctly', function() {
+			var winningBets = ExactaCalculator.CalculateWinningBets(totalBets, raceResults);
+			var dividends = ExactaCalculator.CalculateDividends(winningBets, totalBets);
+
+			expect(winningBets).to.have.property('1,2');
+			expect(dividends[0]).to.have.property('1,2');
+			expect(dividends[0]).to.have.deep.property('1,2', 2.83);
+			expect(winningBets).to.deep.equal(expectedResponseBets);
+			expect(dividends).to.deep.equal(expectedResponseDividends);	
 		});
 		it('Should return a single result', function() {
+			var winningBets = ExactaCalculator.CalculateWinningBets(totalBets, raceResults);
+			var dividends = ExactaCalculator.CalculateDividends(winningBets, totalBets);
+			var propertyCount = Object.keys(dividends[0]);
 
+			assert.equal(dividends.length, 1);
+			assert.equal(propertyCount.length,1);
+			assert.equal(dividends[0][propertyCount[0]], 2.83);
+			expect(winningBets).to.deep.equal(expectedResponseBets);
+			expect(dividends).to.deep.equal(expectedResponseDividends);
 		});
 	});	
 });

@@ -9,6 +9,7 @@
   "license": "BSD",
   "devDependencies": {
     "mocha": "^1.21.4",
-    "chai": "^1.9.1"
+    "chai": "^1.9.1",
+    "lodash": "~3.5.0"
   }
 }
