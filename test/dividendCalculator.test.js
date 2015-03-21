@@ -2,7 +2,7 @@ var Calculators = require('../lib/dividendCalculators');
 var assert = require('chai').assert;
 var expect = require('chai').expect;
 
-describe('Dividend Calculator', function() {
+describe('Dividend Calculators', function() {
 	describe('Win', function() {
 
 	  beforeEach(function(){
