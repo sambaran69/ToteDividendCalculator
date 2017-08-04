@@ -58,7 +58,7 @@ Before beginning work, a developer must set up the development environment on th
 * [Node.js](http://nodejs.org/) - application platform built on Chrome's JavaScript runtime
 
 ### Development Dependencies
-* [Mocha](http://visionmedia.github.io/mocha/) - test framework
+* [Mocha](http://mochajs.org/) - test framework
 * [Chai](http://chaijs.com/) - TDD/BDD assertion library
 
 ### Running Tests
